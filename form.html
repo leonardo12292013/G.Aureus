@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Заявка на литьё</title>
+  <link rel="stylesheet" href="css/css.css" />
+</head>
+<body>
+<div class="form-container">
+  <h1>Оформление заявки</h1>
+  <form id="cast-form">
+    <label for="name">Ваше имя:</label>
+    <input type="text" id="name" name="name" required />
+
+    <label for="description">Описание изделия:</label>
+    <textarea id="description" name="description" rows="4" required></textarea>
+
+    <label for="photo">Фото восковой модели:</label>
+    <input type="file" id="photo" name="photo" accept="image/*" />
+
+    <button type="submit">Отправить заявку</button>
+    <button class="main-button" onclick="location.href='index.html'">Назад</button>
+  </form>
+
+  <div id="result" style="margin-top:20px; font-weight: bold;"></div>
+
+  <p style="margin-top: 30px;">
+    Посмотреть статус заказа можно <a href="status.html" style="color:#00ffff;">здесь</a>.
+  </p>
+</div>
+
+<script>
+  const form = document.getElementById('cast-form');
+  const resultDiv = document.getElementById('result');
+
+  function generateCode() {
+    // Генерируем код в формате: ZAKAZ-XXXX (4 цифры)
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    return `ZAKAZ-${randomNum}`;
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = form.name.value.trim();
+    const description = form.description.value.trim();
+    // Фото пока не сохраняем, для простоты
+
+    if (!name || !description) {
+      alert('Пожалуйста, заполните все обязательные поля.');
+      return;
+    }
+
+    const code = generateCode();
+
+    // Сохраняем заказ в localStorage как объект
+    let orders = JSON.parse(localStorage.getItem('orders')) || {};
+
+    orders[code] = {
+      name,
+      description,
+      status: 'Ожидает принесения воска', // новый стартовый статус
+      date: new Date().toLocaleString(),
+    };
+
+    localStorage.setItem('orders', JSON.stringify(orders));
+
+    resultDiv.textContent = `Спасибо, заявка принята! Ваш код заказа: ${code}. Запомните его, чтобы отслеживать статус.`;
+
+    form.reset();
+  });
+</script>
+</body>
+</html>

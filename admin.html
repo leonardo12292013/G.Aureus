@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Панель управления заказами</title>
+
+  <style>
+    body {
+      background: linear-gradient(to right, #240b36, #c31432);
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .form-container {
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 900px;
+      margin: 0 auto;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: white;
+    }
+    th, td {
+      border: 1px solid #555;
+      padding: 10px;
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      background: #240b36;
+    }
+    select {
+      border-radius: 6px;
+      padding: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button.save-btn, button.delete-btn {
+      background: #009FFF;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      margin-right: 5px;
+      transition: background-color 0.3s;
+    }
+    button.save-btn:hover, button.delete-btn:hover {
+      background: #0077cc;
+    }
+    button.print-btn {
+      margin-top: 15px;
+      background: #ec2F4B;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      display: block;
+      margin-left: auto;
+      transition: background-color 0.3s;
+    }
+    button.print-btn:hover {
+      background: #b02030;
+    }
+  </style>
+</head>
+<body>
+<div class="form-container">
+  <h1>Панель управления заказами</h1>
+  <table id="orders-table">
+    <thead>
+    <tr>
+      <th>Код</th>
+      <th>Имя</th>
+      <th>Описание</th>
+      <th>Статус</th>
+      <th>Дата</th>
+      <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button class="print-btn" onclick="window.print()">Печать заявок</button>
+  <button class="print-btn" onclick="location.href='toadmin.html'">Назад</button>
+</div>
+
+<script>
+  const tbody = document.querySelector('#orders-table tbody');
+
+  function loadOrders() {
+    let orders = JSON.parse(localStorage.getItem('orders')) || {};
+    tbody.innerHTML = '';
+
+    for (const code in orders) {
+      const order = orders[code];
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+          <td>${code}</td>
+          <td>${order.name}</td>
+          <td>${order.description}</td>
+          <td>
+            <select data-code="${code}">
+              <option value="Ожидает принесения воска" ${order.status === 'Ожидает принесения воска' ? 'selected' : ''}>Ожидает принесения воска</option>
+              <option value="Воск получен" ${order.status === 'Воск получен' ? 'selected' : ''}>Воск получен</option>
+              <option value="В процессе" ${order.status === 'В процессе' ? 'selected' : ''}>В процессе</option>
+              <option value="Готово" ${order.status === 'Готово' ? 'selected' : ''}>Готово</option>
+              <option value="Передано в доставку" ${order.status === 'Передано в доставку' ? 'selected' : ''}>Передано в доставку</option>
+              <option value="Отменено" ${order.status === 'Отменено' ? 'selected' : ''}>Отменено</option>
+            </select>
+          </td>
+          <td>${order.date}</td>
+          <td>
+            <button class="save-btn" data-code="${code}">Сохранить</button>
+            <button class="delete-btn" data-code="${code}">Удалить</button>
+          </td>
+        `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  tbody.addEventListener('click', e => {
+    if (e.target.classList.contains('save-btn')) {
+      const code = e.target.getAttribute('data-code');
+      const select = tbody.querySelector(`select[data-code="${code}"]`);
+      const newStatus = select.value;
+
+      let orders = JSON.parse(localStorage.getItem('orders')) || {};
+      if (orders[code]) {
+        orders[code].status = newStatus;
+        localStorage.setItem('orders', JSON.stringify(orders));
+        alert(`Статус заказа ${code} обновлен на "${newStatus}"`);
+      }
+    } else if (e.target.classList.contains('delete-btn')) {
+      const code = e.target.getAttribute('data-code');
+      let orders = JSON.parse(localStorage.getItem('orders')) || {};
+
+      if (orders[code]) {
+        const status = orders[code].status;
+
+        if (status === 'Готово' || status === 'Отменено') {
+          if (confirm(`Удалить заказ ${code}?`)) {
+            delete orders[code];
+            localStorage.setItem('orders', JSON.stringify(orders));
+            alert(`Заказ ${code} удалён`);
+            loadOrders();
+          }
+        } else {
+          alert(`Нельзя удалить заказ со статусом "${status}". Только "Готово" или "Отменено".`);
+        }
+      }
+    }
+  });
+
+  loadOrders();
+</script>
+</body>
+</html>

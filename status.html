@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Статус заказа</title>
+  <link rel="stylesheet" href="css/css.css" />
+  <style>
+    button.cancel-btn {
+      margin-top: 15px;
+      padding: 8px 16px;
+      background-color: #ec2F4B;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    button.cancel-btn:hover {
+      background-color: #b02030;
+    }
+  </style>
+</head>
+<body>
+<div class="form-container">
+  <h1>Проверка статуса заказа</h1>
+  <form id="status-form">
+    <label for="order-code">Введите код заказа:</label>
+    <input type="text" id="order-code" name="order-code" placeholder="ZAKAZ-1234" required />
+    <button type="submit">Проверить</button>
+    <button class="main-button" onclick="location.href='index.html'">Назад</button>
+  </form>
+
+  <div id="status-result" style="margin-top: 20px; font-weight: bold; min-height: 100px;"></div>
+
+  <p style="margin-top: 30px;">
+    Вернуться на <a href="form.html" style="color:#00ffff;">оформление заявки</a>.
+  </p>
+</div>
+
+<script>
+  const statusForm = document.getElementById('status-form');
+  const statusResult = document.getElementById('status-result');
+
+  function renderOrder(order, code) {
+    let statusNormalized = order.status.trim().toLowerCase();
+
+    let html = `
+      Заказ <strong>${code}</strong><br>
+      Имя: ${order.name}<br>
+      Описание: ${order.description}<br>
+      Статус: <strong>${order.status}</strong><br>
+      Дата заявки: ${order.date}<br>
+    `;
+
+    // Показываем кнопку Отказаться, если статус НЕ готово и НЕ отменено
+    if (statusNormalized !== 'готово' && statusNormalized !== 'отменено') {
+      html += `<button id="cancel-btn" class="cancel-btn">Отказаться от заказа</button>`;
+    }
+
+    statusResult.innerHTML = html;
+
+    const cancelBtn = document.getElementById('cancel-btn');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', () => {
+        if (confirm('Вы действительно хотите отказаться от заказа?')) {
+          let orders = JSON.parse(localStorage.getItem('orders')) || {};
+          orders[code].status = 'Отменено';
+          localStorage.setItem('orders', JSON.stringify(orders));
+          alert(`Заказ ${code} отмечен как отменённый.`);
+          renderOrder(orders[code], code);
+        }
+      });
+    }
+  }
+
+  statusForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const code = statusForm['order-code'].value.trim().toUpperCase();
+
+    let orders = JSON.parse(localStorage.getItem('orders')) || {};
+
+    if (orders[code]) {
+      renderOrder(orders[code], code);
+    } else {
+      statusResult.textContent = 'Заказ с таким кодом не найден. Проверьте правильность кода.';
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Доступ администратора</title>
+  <link rel="stylesheet" href="css/css.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #240b36, #c31432);
+      color: white;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    button {
+      background: linear-gradient(to right, #ec2F4B, #009FFF);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 15px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    button:hover {
+      background: linear-gradient(to right, #b8323c, #0069cc);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+<div class="form-container">
+  <div class="button-group">
+    <button id="admin-btn">Войти в Admin Status</button>
+    <button class="main-button" onclick="location.href='index.html'">Назад</button>
+  </div>
+</div>
+<script>
+  const adminBtn = document.getElementById('admin-btn');
+  const correctPassword = '1981'; // Поставь здесь настоящий пароль отца
+
+  adminBtn.addEventListener('click', () => {
+    const userPassword = prompt('Введите пароль администратора:');
+    if (userPassword === null) {
+      // Отмена ввода
+      return;
+    }
+    if (userPassword === correctPassword) {
+      // Перенаправляем на admin.html
+      window.location.href = 'admin.html';
+    } else {
+      alert('Неверный пароль! Доступ запрещён.');
+    }
+  });
+</script>
+
+</body>
+</html>

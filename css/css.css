@@ -1,0 +1,107 @@
+/* Общий стиль страницы */
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: linear-gradient(to right, #240b36, #c31432);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+}
+
+/* Контейнер формы */
+.form-container {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 30px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Заголовок */
+.form-container h1 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+/* Поля формы */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+label {
+  font-size: 16px;
+}
+
+input[type="text"],
+textarea,
+input[type="file"] {
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+input::file-selector-button {
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+/* Кнопка */
+button[type="submit"],
+#main-button {
+  background: linear-gradient(to right, #ec2F4B, #009FFF);
+  color: white;
+  border: none;
+  padding: 15px;
+  font-size: 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: 0.2s;
+}
+
+/* Наведение на кнопку */
+button[type="submit"]:hover,
+#main-button:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+.button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; /* Расстояние между кнопками */
+}
+
+.main-button {
+  background: linear-gradient(to right, #ec2F4B, #009FFF);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: 0.2s;
+  min-width: 250px;
+  text-align: center;
+}
+
+.main-button:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+

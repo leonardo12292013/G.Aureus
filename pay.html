@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HIGH QUALITY — Перевод денег</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(to right, #240b36, #c31432);
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .form-container {
+      background: rgba(0,0,0,0.3);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 0 25px rgba(0,0,0,0.4);
+    }
+    h1, h2, h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+    input[type="text"]::placeholder {
+      color: #ddd;
+    }
+    button {
+      background: linear-gradient(to right, #ec2F4B, #009FFF);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+      padding: 12px 25px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    button:hover {
+      background: linear-gradient(to right, #b8323c, #0069cc);
+      transform: scale(1.05);
+    }
+    #payment-section {
+      margin-top: 25px;
+    }
+    #message {
+      margin-top: 20px;
+      min-height: 24px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+<div class="form-container">
+  <h1>HIGH QUALITY — Перевод денег</h1>
+
+  <form id="card-check-form">
+    <label for="client-card">Введите номер карты клиента (16 цифр):</label>
+    <input type="text" id="client-card" maxlength="16" pattern="\d{16}" required placeholder="1234567812345678" />
+    <button type="submit">Проверить карту</button>
+    <button class="main-button" onclick="location.href='index.html'">Назад</button>
+  </form>
+
+  <div id="payment-section" style="display:none;">
+    <h2>Выберите способ оплаты</h2>
+
+    <div id="prepay-block" style="margin-bottom:20px;">
+      <h3>Предоплата</h3>
+      <label for="prepay-card">Введите карту для предоплаты:</label>
+      <input type="text" id="prepay-card" maxlength="16" pattern="\d{16}" placeholder="Номер карты" />
+      <button id="prepay-btn" type="button">Оплатить предоплату</button>
+    </div>
+
+    <div id="on-delivery-block">
+      <h3>Оплата в пункте выдачи</h3>
+      <label for="delivery-card">Введите карту для оплаты при выдаче:</label>
+      <input type="text" id="delivery-card" maxlength="16" pattern="\d{16}" placeholder="Номер карты" />
+      <button id="delivery-pay-btn" type="button">Оплатить при выдаче</button>
+    </div>
+  </div>
+
+  <div id="message"></div>
+</div>
+
+<script>
+  const cardCheckForm = document.getElementById('card-check-form');
+  const paymentSection = document.getElementById('payment-section');
+  const messageDiv = document.getElementById('message');
+
+  // Имитация базы карт клиентов (для проверки)
+  const validClientCards = ['1234567812345678', '1111222233334444', '9999888877776666', '4355033921535047'];
+
+  cardCheckForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const clientCard = document.getElementById('client-card').value.trim();
+    if (!/^\d{16}$/.test(clientCard)) {
+      showMessage('Ошибка: номер карты должен содержать ровно 16 цифр.', 'red');
+      paymentSection.style.display = 'none';
+      return;
+    }
+    if (validClientCards.includes(clientCard)) {
+      showMessage('Карта клиента найдена. Выберите способ оплаты.', 'lime');
+      paymentSection.style.display = 'block';
+    } else {
+      showMessage('Карта клиента не найдена в базе.', 'red');
+      paymentSection.style.display = 'none';
+    }
+  });
+
+  function showMessage(text, color) {
+    messageDiv.textContent = text;
+    messageDiv.style.color = color;
+  }
+
+  // Обработчики кнопок оплаты
+  document.getElementById('prepay-btn').addEventListener('click', function() {
+    const prepayCard = document.getElementById('prepay-card').value.trim();
+    if (!/^\d{16}$/.test(prepayCard)) {
+      showMessage('Ошибка: введите корректный номер карты для предоплаты.', 'red');
+      return;
+    }
+    // Здесь вызвать API для списания предоплаты
+    showMessage(`Предоплата с карты ${maskCard(prepayCard)} успешно проведена!`, 'lime');
+  });
+
+  document.getElementById('delivery-pay-btn').addEventListener('click', function() {
+    const deliveryCard = document.getElementById('delivery-card').value.trim();
+    if (!/^\d{16}$/.test(deliveryCard)) {
+      showMessage('Ошибка: введите корректный номер карты для оплаты при выдаче.', 'red');
+      return;
+    }
+    // Здесь вызвать API для списания при выдаче
+    showMessage(`Оплата при выдаче с карты ${maskCard(deliveryCard)} успешно проведена!`, 'lime');
+  });
+
+  // Функция маскировки номера карты для вывода (например: 1234 **** **** 5678)
+  function maskCard(cardNum) {
+    return cardNum.slice(0,4) + ' **** **** ' + cardNum.slice(12);
+  }
+</script>
+</body>
+</html>
